@@ -6,19 +6,21 @@ Defines core data structures used throughout the application.
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum, auto
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, Optional
 
 
 class Signal(Enum):
     """Trading signal types."""
+
     BUY_CE = auto()  # Buy Call Option
     BUY_PE = auto()  # Buy Put Option
-    EXIT = auto()    # Exit current position
-    HOLD = auto()    # No action
+    EXIT = auto()  # Exit current position
+    HOLD = auto()  # No action
 
 
 class OrderStatus(Enum):
     """Order status types."""
+
     PENDING = "pending"
     OPEN = "open"
     FILLED = "filled"
@@ -30,6 +32,7 @@ class OrderStatus(Enum):
 
 class OptionType(Enum):
     """Option contract types."""
+
     CALL = "CALL"
     PUT = "PUT"
 
@@ -37,6 +40,7 @@ class OptionType(Enum):
 @dataclass
 class Tick:
     """Single market tick data."""
+
     security_id: str
     ltp: float
     timestamp: datetime
@@ -44,32 +48,34 @@ class Tick:
     oi: Optional[int] = None
     bid: Optional[float] = None
     ask: Optional[float] = None
-    
-    
+
+
 @dataclass
 class Candle:
     """OHLCV candle data."""
+
     timestamp: datetime
     open: float
     high: float
     low: float
     close: float
     volume: int = 0
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
-            'timestamp': self.timestamp,
-            'Open': self.open,
-            'High': self.high,
-            'Low': self.low,
-            'Close': self.close,
-            'Volume': self.volume
+            "timestamp": self.timestamp,
+            "Open": self.open,
+            "High": self.high,
+            "Low": self.low,
+            "Close": self.close,
+            "Volume": self.volume,
         }
 
 
 @dataclass
 class IndicatorValues:
     """Calculated indicator values for a candle."""
+
     ema_9: float
     rsi: float
     vwap: float
@@ -80,6 +86,7 @@ class IndicatorValues:
 @dataclass
 class OptionContract:
     """Option contract details."""
+
     security_id: str
     symbol: str
     strike: float
@@ -93,6 +100,7 @@ class OptionContract:
 @dataclass
 class Position:
     """Open position details."""
+
     security_id: str
     symbol: str
     option_type: OptionType
@@ -105,17 +113,17 @@ class Position:
     target: float
     current_price: Optional[float] = None
     pnl: float = 0.0
-    
+
     def update_pnl(self, current_price: float) -> float:
         """Update and return current P&L."""
         self.current_price = current_price
         self.pnl = (current_price - self.entry_price) * self.quantity
         return self.pnl
-    
+
     def should_exit_sl(self, current_price: float) -> bool:
         """Check if stop loss is hit."""
         return current_price <= self.stop_loss
-    
+
     def should_exit_target(self, current_price: float) -> bool:
         """Check if target is hit."""
         return current_price >= self.target
@@ -124,6 +132,7 @@ class Position:
 @dataclass
 class OrderRequest:
     """Order request details."""
+
     security_id: str
     exchange_segment: str
     transaction_type: str  # BUY or SELL
@@ -140,6 +149,7 @@ class OrderRequest:
 @dataclass
 class OrderResponse:
     """Order response from API."""
+
     order_id: str
     status: OrderStatus
     security_id: str
@@ -151,9 +161,10 @@ class OrderResponse:
     timestamp: datetime = field(default_factory=datetime.now)
 
 
-@dataclass 
+@dataclass
 class TradeStats:
     """Daily trading statistics."""
+
     date: datetime
     total_trades: int = 0
     winning_trades: int = 0
@@ -161,7 +172,7 @@ class TradeStats:
     total_pnl: float = 0.0
     max_drawdown: float = 0.0
     orders_placed: int = 0
-    
+
     @property
     def win_rate(self) -> float:
         if self.total_trades == 0:

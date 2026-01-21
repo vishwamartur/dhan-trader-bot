@@ -1,11 +1,13 @@
 """
 Tests for candle builder module.
 """
-import pytest
-import asyncio
+
 from datetime import datetime
+
+import pytest
+
 from candle_builder import CandleBuilder
-from models import Tick, Candle
+from models import Tick
 
 
 class TestCandleBuilder:
@@ -19,12 +21,7 @@ class TestCandleBuilder:
     @pytest.fixture
     def sample_tick(self):
         """Create a sample tick."""
-        return Tick(
-            security_id="25",
-            ltp=45000.0,
-            timestamp=datetime.now(),
-            volume=100
-        )
+        return Tick(security_id="25", ltp=45000.0, timestamp=datetime.now(), volume=100)
 
     def test_initialization(self, candle_builder):
         """Test candle builder initialization."""
@@ -34,7 +31,7 @@ class TestCandleBuilder:
     @pytest.mark.asyncio
     async def test_process_tick(self, candle_builder, sample_tick):
         """Test processing a single tick."""
-        result = await candle_builder.process_tick(sample_tick)
+        await candle_builder.process_tick(sample_tick)
         # First tick shouldn't complete a candle
         assert candle_builder.current_candle is not None
 
@@ -42,16 +39,13 @@ class TestCandleBuilder:
     async def test_multiple_ticks(self, candle_builder):
         """Test processing multiple ticks."""
         base_time = datetime.now()
-        
+
         for i in range(5):
             tick = Tick(
-                security_id="25",
-                ltp=45000.0 + i * 10,
-                timestamp=base_time,
-                volume=100
+                security_id="25", ltp=45000.0 + i * 10, timestamp=base_time, volume=100
             )
             await candle_builder.process_tick(tick)
-        
+
         current = candle_builder.current_candle
         assert current is not None
         assert current.high >= current.low
