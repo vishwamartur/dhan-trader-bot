@@ -1,7 +1,7 @@
 # Bank Nifty Scalping Bot Dependencies
 
-# DhanHQ Official API Client
-dhanhq>=2.0.2
+# DhanHQ Official API Client (v2.2.0 for OAuth support)
+dhanhq>=2.2.0
 
 # Data Processing
 pandas>=2.0.0

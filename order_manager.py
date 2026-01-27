@@ -10,8 +10,7 @@ from typing import Dict, Optional
 from dhanhq import dhanhq
 
 from config import (
-    ACCESS_TOKEN,
-    CLIENT_ID,
+    get_dhan_context,
     INDEX_EXCHANGE_SEGMENT,
     INDEX_SECURITY_ID,
     MAX_DAILY_LOSS,
@@ -50,11 +49,12 @@ class OrderManager:
 
         # Initialize Dhan client
         if not paper_trading:
-            self.dhan = dhanhq(CLIENT_ID, ACCESS_TOKEN)
-            logger.info("✅ Connected to Dhan API (LIVE MODE)")
+            dhan_context = get_dhan_context()
+            self.dhan = dhanhq(dhan_context)
+            logger.info("[OK] Connected to Dhan API (LIVE MODE)")
         else:
             self.dhan = None
-            logger.info("📋 Paper Trading Mode - Orders will be simulated")
+            logger.info("[PAPER] Paper Trading Mode - Orders will be simulated")
 
         # Position tracking
         self._positions: Dict[str, Position] = {}  # order_id -> Position

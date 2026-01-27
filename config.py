@@ -11,9 +11,51 @@ from dataclasses import dataclass
 # =============================================================================
 # API CREDENTIALS
 # =============================================================================
-# Get from environment variables for security, or set directly for testing
-CLIENT_ID = os.getenv("DHAN_CLIENT_ID", "YOUR_CLIENT_ID")
-ACCESS_TOKEN = os.getenv("DHAN_ACCESS_TOKEN", "YOUR_ACCESS_TOKEN")
+# Try OAuth credentials first, then fall back to environment variables
+# Run 'python auth.py' for easy browser-based authentication
+
+
+def _get_credentials() -> tuple[str, str]:
+    """Get client_id and access_token from OAuth or environment."""
+    try:
+        from auth import get_access_token, get_client_id
+
+        return get_client_id(), get_access_token()
+    except (ImportError, ValueError):
+        # Fall back to environment variables
+        return (
+            os.getenv("DHAN_CLIENT_ID", "YOUR_CLIENT_ID"),
+            os.getenv("DHAN_ACCESS_TOKEN", "YOUR_ACCESS_TOKEN"),
+        )
+
+
+CLIENT_ID, ACCESS_TOKEN = _get_credentials()
+
+
+def get_dhan_context():
+    """
+    Get DhanContext for API initialization (v2.2.0 pattern).
+
+    Usage:
+        from config import get_dhan_context
+        from dhanhq import dhanhq, MarketFeed, OrderUpdate
+
+        context = get_dhan_context()
+        dhan = dhanhq(context)
+        feed = MarketFeed(context, instruments)
+        updates = OrderUpdate(context)
+
+    Returns:
+        DhanContext object for use with dhanhq APIs
+    """
+    try:
+        from auth import get_dhan_context as auth_get_context
+
+        return auth_get_context()
+    except (ImportError, ValueError):
+        from dhanhq import DhanContext
+
+        return DhanContext(CLIENT_ID, ACCESS_TOKEN)
 
 # =============================================================================
 # TRADING MODE

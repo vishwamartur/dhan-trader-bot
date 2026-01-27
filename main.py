@@ -319,15 +319,16 @@ async def test_connection() -> bool:
     try:
         from dhanhq import dhanhq
 
-        from config import ACCESS_TOKEN, CLIENT_ID
+        from config import get_dhan_context
 
-        dhan = dhanhq(CLIENT_ID, ACCESS_TOKEN)
+        dhan_context = get_dhan_context()
+        dhan = dhanhq(dhan_context)
 
         # Try to fetch fund limits as a test
         result = dhan.get_fund_limits()
 
         if result and "status" in result:
-            logger.info("✅ API connection successful")
+            logger.info("[OK] API connection successful")
             return True
         else:
             logger.error(f"API test failed: {result}")

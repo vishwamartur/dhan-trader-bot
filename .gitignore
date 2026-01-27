@@ -40,6 +40,9 @@ logs/
 .env
 .env.local
 
+# OAuth tokens (sensitive)
+.dhan_token.json
+
 # OS
 .DS_Store
 Thumbs.db

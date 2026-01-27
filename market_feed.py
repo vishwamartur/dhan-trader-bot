@@ -8,9 +8,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from dhanhq import marketfeed
+from dhanhq import MarketFeed
 
-from config import ACCESS_TOKEN, CLIENT_ID, INDEX_SECURITY_ID
+from config import get_dhan_context, INDEX_SECURITY_ID
 from models import Tick
 from utils import async_retry, logger
 
@@ -19,8 +19,6 @@ from utils import async_retry, logger
 class FeedConfig:
     """Market feed configuration."""
 
-    client_id: str = CLIENT_ID
-    access_token: str = ACCESS_TOKEN
     version: str = "v2"
 
 
@@ -40,7 +38,8 @@ class MarketFeedHandler:
         """
         self.config = config or FeedConfig()
         self.tick_queue = tick_queue
-        self.feed: Optional[marketfeed.DhanFeed] = None
+        self.feed: Optional[MarketFeed] = None
+        self._dhan_context = None
         self._running = False
         self._connected = False
         self._reconnect_delay = 1.0
@@ -52,8 +51,8 @@ class MarketFeedHandler:
     def add_instrument(
         self,
         security_id: str,
-        exchange: int = marketfeed.NSE,
-        mode: int = marketfeed.Full,
+        exchange: int = MarketFeed.NSE,
+        mode: int = MarketFeed.Full,
     ):
         """
         Add an instrument to subscribe.
@@ -69,12 +68,12 @@ class MarketFeedHandler:
     def add_index(self, security_id: str = INDEX_SECURITY_ID):
         """Add Bank Nifty index for subscription."""
         # Index is on IDX segment
-        self.instruments.append((marketfeed.IDX, security_id, marketfeed.Full))
+        self.instruments.append((MarketFeed.IDX, security_id, MarketFeed.Full))
         logger.info(f"Added index: {security_id}")
 
     def add_option(self, security_id: str):
         """Add an option contract for subscription."""
-        self.instruments.append((marketfeed.NSE_FNO, security_id, marketfeed.Full))
+        self.instruments.append((MarketFeed.NSE_FNO, security_id, MarketFeed.Full))
         logger.info(f"Added option: {security_id}")
 
     async def _process_message(self, message: dict) -> None:
@@ -118,15 +117,15 @@ class MarketFeedHandler:
         )
 
         try:
-            self.feed = marketfeed.DhanFeed(
-                self.config.client_id,
-                self.config.access_token,
+            self._dhan_context = get_dhan_context()
+            self.feed = MarketFeed(
+                self._dhan_context,
                 self.instruments,
-                self.config.version,
+                version=self.config.version,
             )
             self._connected = True
             self._reconnect_delay = 1.0  # Reset delay on successful connection
-            logger.info("✅ Connected to Dhan Market Feed")
+            logger.info("[OK] Connected to Dhan Market Feed")
 
         except Exception as e:
             self._connected = False

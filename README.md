@@ -43,6 +43,7 @@ A high-frequency scalping bot for Bank Nifty options using the [DhanHQ API](http
 ```
 dhan-trader-bot/
 ├── main.py           # Core orchestrator and trading engine
+├── auth.py           # OAuth authentication (run: python auth.py)
 ├── strategy.py       # Dual momentum scalping strategy
 ├── indicators.py     # Technical indicators (EMA, RSI, MACD, ATR)
 ├── candle_builder.py # Real-time OHLCV candle construction
@@ -97,9 +98,27 @@ sudo make install
 pip install -r requirements.txt
 ```
 
-### 4. Configure API Credentials
+### 4. Authenticate with Dhan
 
-Set environment variables:
+**Option A: Easy OAuth Login (Recommended)**
+
+```bash
+python auth.py
+```
+
+This opens your browser for Dhan login. After authentication, your token is saved automatically.
+
+```bash
+# Check authentication status
+python auth.py --status
+
+# Logout (remove saved token)
+python auth.py --logout
+```
+
+**Option B: Environment Variables**
+
+Set environment variables if you prefer manual configuration:
 
 ```bash
 # Linux/macOS
