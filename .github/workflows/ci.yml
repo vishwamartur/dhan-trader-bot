@@ -106,7 +106,7 @@ jobs:
           DHAN_ACCESS_TOKEN: test_access_token
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml
           fail_ci_if_error: false
