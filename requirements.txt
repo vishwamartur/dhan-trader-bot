@@ -9,7 +9,7 @@ numpy>=1.24.0
 
 # Technical Analysis (requires separate installation of TA-Lib C library)
 # See: https://github.com/TA-Lib/ta-lib-python#installation
-TA-Lib>=0.4.28
+TA-Lib>=0.6.8
 
 # Async Support (included in Python 3.7+ but listed for clarity)
 # asyncio is part of stdlib
