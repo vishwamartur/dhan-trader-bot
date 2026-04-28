@@ -4,7 +4,7 @@
 dhanhq>=2.2.0
 
 # Data Processing
-pandas>=2.0.0
+pandas>=3.0.2
 numpy>=1.24.0
 
 # Technical Analysis (requires separate installation of TA-Lib C library)
